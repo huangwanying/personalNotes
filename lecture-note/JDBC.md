@@ -1,4 +1,4 @@
-# JDBC
+#  JDBC
 
 ## Icebreaker
 
@@ -141,3 +141,64 @@
   ```
 
 + 光标选中方法名字，然后右键执行单元测试。或者打开outline视图，然后选择方法右键执行。
+
+### Dao Mode
+
++ Data Access Object 数据访问对象
+
+  - 新建一个dao的接口，里面声明数据库访问规则。
+
+    ```java
+    public interface GoodsDao {
+    	void findAll();
+    }
+    ```
+
+  - 新建一个Dao的实现类implement，具体实现早前定义的规则。
+
+    ```java
+    public class GoodsDaoImpl implements GoodsDao {
+    	@Override
+    	public void findAll() {
+    		Connection conn = null;
+    		Statement st = null;
+    		ResultSet rs = null;
+    		try {
+    			conn = JDBCUtil.getConn();
+    			st = conn.createStatement();
+    			String sql = "select * from goods";
+    			rs = st.executeQuery(sql);
+    			while(rs.next()) {
+    				String name = rs.getString("goods_name");
+    				int price = rs.getInt("shop_price");
+    				int click = rs.getInt("click_count");
+    				System.out.println("name=" + name + "===price=" + price + "==click=" + click);
+    			}
+    		} catch (Exception e) {
+    			e.printStackTrace();
+    		}finally {
+    			JDBCUtil.release(conn, st, rs);
+    		}
+    	}
+    }
+    ```
+
+  - 直接使用实现。
+
+    ```java
+    @Test
+    public void testFindAll() {
+        GoodsDao dao = new GoodsDaoImpl();
+        dao.findAll();
+    }
+    ```
+
++ implement 接口，父类的引用指向子类的对象，接口的引用指向类的对象。
+
+### Statement security issues
+
++ Statement执行，其实是拼接sql语句的。先拼接sql语句，然后再一起执行。容易出现安全问题。
+
+  `' or '1=1'`
+
++ PrepareStatement，替换Statement对象。
