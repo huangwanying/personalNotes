@@ -201,4 +201,45 @@
 
   `' or '1=1'`
 
-+ PrepareStatement，替换Statement对象。
++ PreparedStatement，替换Statement对象。
+
+  ```java
+  Connection conn = null;
+  Statement st = null;
+  ResultSet rs = null;
+  try {
+      conn = JDBCUtil.getConn();
+      st = conn.createStatement();
+      String sql = "select * from goods where goods_name=? and goods_sn=?";
+      PreparedStatement ps = conn.prepareStatement(sql);
+      //占位符赋值
+      ps.setString(1, username);
+      ps.setString(2, password);
+      rs = ps.executeQuery();
+      if(rs.next()) {
+          System.out.println("longin success");
+      }else {
+          System.out.println("longin fail");
+      }
+  } catch (Exception e) {
+      e.printStackTrace();
+  }finally {
+      JDBCUtil.release(conn, st, rs);
+  }
+  ```
+
+  - 相比较以前的statement，预先处理给定的sql语句，对其执行语法检查。在sql语句里面使用?占位符来替代后续要传递进来的变量。后面进来的变量值将会被看成是字符串，不会产生任何的关键字。
+
+### Summary
+
++ JDBC入门
++ 抽取工具类
++ Statement CRUD
+  - 演练CRUD
+
++ Dao模式
+  - 声明与实现分开
+
++ PreparedStatement CRUD
+  - 预处理sql语句，解决上面statement出现的问题
+
